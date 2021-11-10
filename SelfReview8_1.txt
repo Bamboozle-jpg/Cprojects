@@ -1,0 +1,20 @@
+a) c = tolower(c)
+b) printf("%s%s", isdigit(c) ? " is a ": " is not a ", "digit");
+c) printf("%s%s", iscontrol(c) ? " is a ": " is not a ", "control character");
+d) fgets(s1, 100, stdin);
+e) puts(s1);
+f) ptr = strrchr(s1, c);
+g) putchar(c);
+h) printf("%s%s", isalpha(c) ? " is a ": " is not a ", "letter");
+i) getchar(c);
+j) ptr = strstr(s1, s2);
+k) printf("%s%s", isprint(c) ? " is a ": " is not a ", "printable");
+l) sscanf("1.27 10.3 9.432","%f%f%f", &d, &e, &f);
+m) strcpy(s1, s2);
+n) ptr = strbrk(s1, s2);
+o) printf(""%d", strcmp(s1, s2));
+p) ptr = strpbrk(s1, c);
+q) sprintf(s1, "%7d%7d%7d", x, y, z);
+r) strcat(s1, s2, 10);
+s) printf("%d", strlen(s1));
+t) ptr = strtok(s2, ",")

@@ -1,0 +1,49 @@
+pgs 316 317 7.3 7.4 7.6
+
+7.3 :
+a) float numbers[10] = {0.0, 1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9};
+b) float *nPtr;
+c)
+for (int i = 0; i < SIZE; i++) {
+  printf("%.1f\n", numbers[i]);
+}
+d)
+nPtr = numbers;
+nPtr = &numbers[0];
+*nPtr = numbers[0];
+e)
+for (int i = 0; i < SIZE; i++) {
+  printf("%.1f\n", *(nPtr + i));
+}
+f)
+for (int i = 0; i < SIZE; i++) {
+  printf("%.1f\n", *(numbers + i));
+}
+g)
+for (int i = 0; i < SIZE; i++) {
+  printf("%.1f\n", nPtr[i]);
+}
+h)
+numbers[4]
+*(numbers + 4)
+nPtr[4]
+*(nPtr + 4)
+i) 1002532, with 8.8
+j) 1002504 with 1.1
+
+7.4 :
+float *fPtr;
+fPtr = &number1;
+printf("%f", *fPtr);
+number2 = *fPtr;
+printf("%f", number2);
+printf("%p", &number1);
+printf("%p", fPtr); Yes
+
+7.6 :
+zptr doesn't exist, should be zPtr
+zPtr refers to the address, should be *zPtr
+should be zPtr[2] w/out the *
+should be less than not equal to because it goes up to index 4 and this goes up to index 5
+sPtr is Null and Void and should be int should be typecast to an int pointer with number =  *((int *) sPtr)
+That will increment the address, use *z = *z + 1
