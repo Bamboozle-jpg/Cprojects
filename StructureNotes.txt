@@ -48,8 +48,7 @@ typedef struct {
   char* species;
   int teeth;
   int age;
-};
-fish;
+} fish;
 
 fish f = ("Snappy", "Piranha", 69, 4);
 
@@ -59,3 +58,21 @@ copy or assign as a unistd
 take address with &
 access it's members
 can't compare structs
+
+Use a pointer to pass them around.
+
+
+EX of using typedef and function :
+
+typedef struct {
+  const char* name;
+  const char* species;
+  int age;
+} turtle;
+
+void happy_birthday(turtle *t) {
+  (*t).age = (*t).age + 1
+  printf("You're now %d", t);
+}
+
+another way to write (*t).age is t->age
