@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/ioctl.h>
-// #include <conio.h>
+#include <ncurses.h>
 
 #define ENEMGENX 1
 #define ENEMGENY 2
