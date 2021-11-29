@@ -16,14 +16,17 @@
 #define HEIGHT 20
 
 #define ENEMGENX 1
-#define ENEMGENY 2
+#define ENEMGENY 10
 #define ENEMGENTX 8
 #define ENEMGENTY 10
 
 #define OFFSETX 12
 #define OFFSETY 4
+#define SCOOL 5
+#define GAMESPEED 200
+#define ENEMCOOL 5
 
-int enemy1X, enemy1Y, playerX, playerY, move1, move2, enemy2X, enemy2Y;
+int enemy1X, enemy1Y, playerX, playerY, move1, move2, enemy2X, enemy2Y, shot1X, shot1Y, shot2X, shot2Y, score, sCool, cool1, cool2, end;
 
 //Setup for later when it centers the window in the screen
 int startx = 0;
@@ -49,6 +52,7 @@ int enemyMove(int board[12][12], int posX, int posY, int dirMoved);
 void createEnemy(int gen);
 
 int main() {
+	end = 0;
   //Creates the Window
   WINDOW *menu_win;
   // Sets up Var for which thing to highlight?
@@ -72,8 +76,11 @@ int main() {
 		{1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
 		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 	};
+	sCool = 0;
 
 //Setup and stuff
+	playerX = 1;
+	playerY = 1;
   //Sets it up to print with ncurses
 	initscr();
   //Clears the screen.... for some reason (removing this does nothing)
@@ -101,12 +108,35 @@ int main() {
   //Calls print_menu (oh boy, this is gonna be interesting)
 	enemy1X = -1;
   enemy1Y = -1;
+	cool1 = -1;
+	cool2 = -1;
   createEnemy(1);
   createEnemy(2);
-  int x = 1;
   move1 = 3;
   move2 = 3;
-  while(!(x == 5)) {
+  while(1) {
+		if (sCool > 0) {
+			sCool--;
+		}
+
+		if (cool1 == 0) {
+			enemy1X = ENEMGENX;
+			enemy1Y = ENEMGENY;
+			move1 = 3;
+			cool1--;
+		} else {
+			cool1--;
+		}
+
+		if (cool2 == 0) {
+			enemy2X = ENEMGENTX;
+			enemy2Y = ENEMGENTY;
+			move2 = 3;
+			cool2--;
+		} else {
+			cool2--;
+		}
+
     if (enemy1X != -1) {
       move1 = enemyMove(maze, enemy1X, enemy1Y, move1);
       switch (move1) {
@@ -145,78 +175,89 @@ int main() {
         }
       }
 
+			if ( (playerX == enemy1X && playerY == enemy1Y) || (playerX == enemy2X && playerY == enemy2Y) ) {
+				end = 1;
+				printGameState(menu_win, highlight, q, maze);
+			}
+
 			c = wgetch(menu_win);
+			shot1X = -4;
+			shot1Y = -4;
+			shot2X = -4;
+			shot2Y = -4;
 			switch(c) {
 				//moves the highlight depending on what's pressed
 				case KEY_UP:
-					playerY--;
+					if(maze[playerY-1][playerX] == 0) {
+						playerY--;
+					}
 					break;
 				case KEY_DOWN:
-					playerY++;
+					if(maze[playerY+1][playerX] == 0) {
+						playerY++;
+					}
 					break;
 				case KEY_RIGHT:
-					playerX++;
+					if(maze[playerY][playerX+1] == 0) {
+						playerX++;
+					}
 					break;
 				case KEY_LEFT:
-					playerX--;
+					if(maze[playerY][playerX-1] == 0) {
+						playerX--;
+					}
 					break;
-				case 10:
-					choice = highlight;
+				case 'd':
+					if (sCool == 0) {
+						sCool = SCOOL;
+						if(maze[playerY][playerX+1] == 0) {
+							shot1Y = playerY;
+							shot1X = playerX+1;
+							if(maze[playerY][playerX+2] == 0) {
+								shot2Y = playerY;
+								shot2X = playerX+2;
+							}
+						}
+					}
+					break;
+				case 'a':
+					if (sCool == 0) {
+						sCool = SCOOL;
+						if(maze[playerY][playerX-1] == 0) {
+							shot1Y = playerY;
+							shot1X = playerX-1;
+							if(maze[playerY][playerX-2] == 0) {
+								shot2Y = playerY;
+								shot2X = playerX-2;
+							}
+						}
+					}
 					break;
 				default:
 					break;
 			}
+			if ((shot1X == enemy1X && shot1Y == enemy1Y) || (shot2X == enemy1X && shot2Y == enemy1Y)) {
+				score++;
+				enemy1X = -100;
+				enemy1Y = -100;
+				cool1 = ENEMCOOL;
+			}
+			if ((shot1X == enemy2X && shot1Y == enemy2Y) || (shot2X == enemy2X && shot2Y == enemy2Y)) {
+				score++;
+				enemy2X = -100;
+				enemy2Y = -100;
+				cool2 = ENEMCOOL;
+			}
     }
     printGameState(menu_win, highlight, q, maze);
-    msleep(50);
+    msleep(GAMESPEED);
+		if ( (playerX == enemy1X && playerY == enemy1Y) || (playerX == enemy2X && playerY == enemy2Y) ) {
+			end = 1;
+			printGameState(menu_win, highlight, q, maze);
+		}
   }
 
-//While loop to go through and change what's highlighted
-  //While true (uh oh, don't tell ms. Voldstad :flushed:)
-	while(1) {
-    //When a character is put up, it acquires it and looks at it in the window
-    c = wgetch(menu_win);
-    //Takes that character and sets it to a switch (hah, get fucked jack)
-		switch(c) {
-      //moves the highlight depending on what's pressed
-		  case KEY_UP:
-				if(highlight == 1)
-					highlight = n_choices;
-				else
-					--highlight;
-				break;
-			case KEY_DOWN:
-				if(highlight == n_choices)
-					highlight = 1;
-				else
-					++highlight;
-				break;
-      //I think this is enter? Confirms choice based on what's highlighted
-			case 10:
-				choice = highlight;
-				break;
-      //Hey fucker, you messed up on entering either up down or enter, idiot
-			default:
-				mvprintw(24, 0, "Charcter pressed is = %3d Hopefully it can be printed as '%c'", c, c);
-				refresh();
-				break;
-		}
-
-//Still in loop, choice is made,
-    //calls print menu again
-		// print_menu(menu_win, highlight, q, maze);
-    //User made their choice
-		if(choice != 0)	/* User did a choice come out of the infinite loop */
-			break;
-    //Ups q so you can see the program is still running even while getch doesn't return anything
-    q++;
-    //Wait to test my theory that this should work.
-    msleep(900);
-	}
-
-//Out of loop
-	//Print outside the window :
-	mvprintw(23, 0, "You chose choice %d with choice string %s\n", choice, choices[choice - 1]);
+//out of loop
 	//clear to end of line (lets see what happens when I get rid of it :flushed:, ABSOLUTELY NOTHING, I DON'T KNOW WHAT THIS LINE IS DOING HERE, but I'll keep it)
 	clrtoeol();
 	//takes everything from printws and puts it on the screen
@@ -229,45 +270,67 @@ int main() {
 
 
 //Takes in a window (I'd call it a structure), which thing's highlighted, and q which keeps going up to prove that it will keep going when a key isn't pressed
-void printGameState(WINDOW *menu_win, int highlight, int q, int board[12][12])
-{
-	//
-	int x, y, i;
+void printGameState(WINDOW *menu_win, int highlight, int q, int board[12][12]) {
+	//setup
 	//where to print it
-	x = 0;
-	y = 0;
 	//
 	box(menu_win, 0, 0);
 	//Yooooo I think this inverts the colors
 	// wattron(menu_win, A_REVERSE);
 	//i is vertical, j is horizontal
-	for(int i = 0; i < 12; i++) {
-		//prints a row
-		for (int j = 0; j < 12; j++) {
-			if ((i == ENEMGENY && j == ENEMGENX) || (i == ENEMGENTY && j == ENEMGENTX)) {
-        if((i == enemy1Y && j == enemy1X) || (i == enemy2Y && j == enemy2X)) {
-          mvwprintw(menu_win, i+OFFSETY, 3*j+OFFSETX, "%s", "[M ");
-        } else if (i == playerY && j == playerX) {
-          mvwprintw(menu_win, i+OFFSETY, 3*j+OFFSETX, "%s", "[G ");
-        } else {
-          mvwprintw(menu_win, i+OFFSETY, 3*j+OFFSETX, "%s", "[  ");
-        }
-      } else if (playerY == i && playerX == j) {
-        //prints you (the gamer)
-        mvwprintw(menu_win, i+OFFSETY, 3*j+OFFSETX, "%s", " G ");
-      } else if(enemy1Y == i && enemy1X == j) {
-        //prints monster
-        mvwprintw(menu_win, i+OFFSETY, 3*j+OFFSETX, "%s", " M ");
-      } else if(enemy2Y == i && enemy2X == j) {
-        //prints monster
-        mvwprintw(menu_win, i+OFFSETY, 3*j+OFFSETX, "%s", " M ");
-      } else if (board[i][j] == 1) {
-        //Prints a wall if the corresponding number is 1
-        mvwprintw(menu_win, i+OFFSETY, 3*j+OFFSETX, "%s", "=#=");
-      } else {
-        //Prints an empty space if there's a corresponding 0
-        mvwprintw(menu_win, i+OFFSETY, 3*j+OFFSETX, "%s", "   ");
-      }
+	if (end == 0) {
+		for(int i = 0; i < 12; i++) {
+			//prints a row
+			for (int j = 0; j < 12; j++) {
+				if ((i == ENEMGENY && j == ENEMGENX) || (i == ENEMGENTY && j == ENEMGENTX)) {
+	        if((i == enemy1Y && j == enemy1X) || (i == enemy2Y && j == enemy2X)) {
+	          mvwprintw(menu_win, i+OFFSETY, 3*j+OFFSETX, "%s", "[M ");
+	        } else if (i == playerY && j == playerX) {
+	          mvwprintw(menu_win, i+OFFSETY, 3*j+OFFSETX, "%s", "[G ");
+	        } else {
+	          mvwprintw(menu_win, i+OFFSETY, 3*j+OFFSETX, "%s", "[  ");
+	        }
+	      } else if (playerY == i && playerX == j) {
+	        //prints you (the gamer)
+	        mvwprintw(menu_win, i+OFFSETY, 3*j+OFFSETX, "%s", " G ");
+	      } else if (shot1Y == i && shot1X == j) {
+	        //prints beginning of sword
+	        mvwprintw(menu_win, i+OFFSETY, 3*j+OFFSETX, "%s", "=[=");
+	      } else if (shot2Y == i && shot2X == j) {
+					//prints the end of sword
+	        if (shot2X > playerX) {
+	        	mvwprintw(menu_win, i+OFFSETY, 3*j+OFFSETX, "%s", "==>");
+					} else if (shot2X < playerX) {
+	        	mvwprintw(menu_win, i+OFFSETY, 3*j+OFFSETX, "%s", "<==");
+					}
+	      } else if(enemy1Y == i && enemy1X == j) {
+	        //prints monster
+	        mvwprintw(menu_win, i+OFFSETY, 3*j+OFFSETX, "%s", " M ");
+	      } else if(enemy2Y == i && enemy2X == j) {
+	        //prints monster
+	        mvwprintw(menu_win, i+OFFSETY, 3*j+OFFSETX, "%s", " M ");
+	      } else if (board[i][j] == 1) {
+	        //Prints a wall if the corresponding number is 1
+	        mvwprintw(menu_win, i+OFFSETY, 3*j+OFFSETX, "%s", "=#=");
+	      } else {
+	        //Prints an empty space if there's a corresponding 0
+	        mvwprintw(menu_win, i+OFFSETY, 3*j+OFFSETX, "%s", "   ");
+	      }
+			}
+			if (sCool == 0) {
+				mvwprintw(menu_win, OFFSETY+12, OFFSETX, "%s", "Sword Swing Ready!            ");
+			} else {
+				mvwprintw(menu_win, OFFSETY+12, OFFSETX, "Sword Almost ready, Cooldown %d", sCool);
+			}
+			mvwprintw(menu_win, OFFSETY+13, OFFSETX, "Score : %d ", score);
+		}
+	} else {
+		for (int i = 0; i < 5; i++) {
+			mvwprintw(menu_win, OFFSETY+i, OFFSETX, "                                     ");
+		}
+		mvwprintw(menu_win, OFFSETY+5, OFFSETX-3, "CONGRATULATIONS! YOU GOT A SCORE OF : %d!!!", score);
+		for (int i = 6; i < 14; i++) {
+			mvwprintw(menu_win, OFFSETY+i, OFFSETX, "                                     ");
 		}
 	}
 	// wattroff(menu_win, A_REVERSE);

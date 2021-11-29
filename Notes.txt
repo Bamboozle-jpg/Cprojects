@@ -1,0 +1,77 @@
+Chapter 12 Reading Guide					Name:
+
+12.1-12.3 Self-Referential Structures and Dynamic Memory Allocation
+Short description:
+  A structure that contains a pointer member to a structure of it's own same type
+  Dynamic memory allocation is code that can grow and shrink in memory when needed (utilizing malloc and free)
+Code sample:
+  struct node {
+    int data;
+    struct node *nextPtr;
+  }
+
+  newPtr = malloc(sizeof(struct node));
+12.4 Linked Lists ( all the way to p. 489)
+Short description:
+  A bunch of self referential functions that lead to the next repeatedly allowing for a variating sized list.
+Why would you use it?
+  If you wanted to save on memory and also wanted a list that you remove or add stuff from/to
+Code sample and/or functions you might write using this structure.
+  Insert function
+  print function
+  delete function
+  See book for 173 line code sample
+Illustration -- find a graphic on the web that represents the concept, or take a screenshot from the book.
+  A : a[]
+  [] --> B
+  B : b[]
+  [] --> C
+  etc. etc.
+12.5 Stacks (all the way to p. 494)
+Short description:
+  A list where the first thing in is the last thing out (like a stack) you can only add/remove from the top.
+Why would you use it?
+  WHen you want whatever went in most recently to come out first.
+  Or function calls.
+Code sample and/or functions you might write using this structure.
+  push
+  Pop
+  See code in book
+Illustration
+      <----> ====== Yes!
+  =======
+  =======
+  =======
+  ======= <---> NO!
+12.6 Queues (all the way to p. 501)
+Short description:
+  A list where the First in is the First out
+Why would you use it?
+  You have a database where people are trying to get things through, and you don't want one specific person waiting a long time
+Code sample and/or functions you might write using this structure.
+  Print Queue
+  Check if empty
+  Dequeue
+  Enqueue
+Illustration
+    <--- ======
+  ======
+  ======
+  ====== --->
+12.7 Trees (all the way to p. 506)
+Short description:
+  A 2D linked list that gives a left and right pointer to 2 more of the same structure
+Why would you use it?
+  For creating a tree of structures and data
+Code sample and/or functions you might write using this structure.
+  See code sample in book
+  Insert node
+  inOrder
+  preOrder
+  postOrder
+Illustration
+           []x[]
+       V           V
+     []x[]       []x[]
+    V     V     V     V
+  []x[] []x[] []x[] []x[]
